@@ -7,37 +7,35 @@
 
 class WordCounter {
 public:
-	WordCounter(std::string fileInName, std::string fileOutName) {
+	void readWords(const std::string& fileInName ) {
+		std::string word;
+		std::ifstream fileIn;
 		fileIn.open(fileInName);
-		fileOut.open(fileOutName);
-		std::map <std::string, int> words = fillMap();
-		sortList(words);
-		
-	}
-	~WordCounter() {
-		fileIn.close();
-		fileOut.close();
-	}
-private:
-	std::ofstream fileOut;
-	std::ifstream fileIn;
-	std::map <std::string, int> fillMap() {
-		std::map <std::string, int> words;
-		std::string word;
-		while (std::getline(fileIn, word, ' '))
-			words[word]++;
-		return words;
-	}
+		if (!fileIn) {
+			throw std::logic_error("Unable to open input file");
 
-	struct WordFreq {
-		std::string word;
-		int freq;
-		WordFreq() {
-			freq = 0;
 		}
-	};
+		while (std::getline(fileIn, word, ' ')) {
+			std::string new_word = "";
+			for (unsigned int i = 0; i < word.size(); i++) {
+				if ((word[i] >= 48 && word[i] <= 57) || (word[i] >= 97 && word[i] <= 122))
+					new_word += word[i];
+				else if (new_word != ""){
+					words[new_word]++;
+					new_word = "";
+				}
+			}
+			if (new_word != "")
+				words[new_word]++;
+		}
+	}
 
-	void sortList(std::map <std::string, int> words) {
+	void writeWords(const std::string& fileOutName) {
+		std::ofstream fileOut;
+		fileOut.open(fileOutName);
+		if (!fileOut) {
+			throw std::logic_error("Unable to open output file");
+		}
 		std::list <WordFreq> wordsList;
 		float freqSum = 0;
 		for (auto it = words.begin(); it != words.end(); ++it) {
@@ -52,4 +50,14 @@ private:
 			fileOut << itList->word << " " << itList->freq << " " << itList->freq / freqSum * 100 << std::endl;
 		}
 	}
+private:
+	std::map <std::string, int> words;
+	struct WordFreq {
+		std::string word;
+		int freq;
+		WordFreq() {
+			freq = 0;
+		}
+	};
+	
 };
