@@ -28,6 +28,7 @@ public:
 			if (new_word != "")
 				words[new_word]++;
 		}
+		fileIn.close();
 	}
 
 	void writeWords(const std::string& fileOutName) {
@@ -49,6 +50,7 @@ public:
 		for (auto itList = wordsList.begin(); itList != wordsList.end(); ++itList) {
 			fileOut << itList->word << " " << itList->freq << " " << itList->freq / freqSum * 100 << std::endl;
 		}
+		fileOut.close();
 	}
 private:
 	std::map <std::string, int> words;
